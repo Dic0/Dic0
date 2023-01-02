@@ -1,4 +1,9 @@
-## Olá! Eu sou o Diéric Walendorff!
+<img width=100% src="https://capsule-render.vercel.app/api?type=waving&color=ffff&height=120&section=header"/>
+
+[![Typing SVG](https://readme-typing-svg.herokuapp.com/?color=ffff&size=35&center=true&vCenter=true&width=1000&lines=HELLO,+MY+NAME+is+Diéric+Walendorff;I'm+18+years+old;I'm+from+Brazil;Be+Welcome!+:%29)](https://git.io/typing-svg)
+
+##
+
 <div align="center">
   <a href="https://github.com/Dic0">
   <img height="180em" src="https://github-readme-stats.vercel.app/api?username=Dic0&show_icons=true&theme=dark&include_all_commits=true&count_private=true"/>
@@ -22,3 +27,5 @@
   ![Snake animation](https://github.com/Dic0/Dic0/blob/output/github-contribution-grid-snake.svg)
   
 </div>
+
+<img width=100% src="https://capsule-render.vercel.app/api?type=waving&color=ffff&height=120&section=footer"/>
