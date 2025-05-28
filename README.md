@@ -43,6 +43,6 @@
   <img src="https://github.com/Dic0/Dic0/blob/output/github-contribution-grid-snake.svg" alt="snake eating commits">
 </p>
 
-<!-- ❗ Para funcionar, você precisa configurar o GitHub Actions no seu repositório usando o projeto Platane/snk -->
+![Snake animation](https://github.com/Dic0/Dic0/blob/output/github-contribution-grid-snake.svg)
 
 <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=ffffff&height=120&section=footer"/>
