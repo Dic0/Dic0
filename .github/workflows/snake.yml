@@ -17,6 +17,7 @@ jobs:
           github_user_name: Dic0
           outputs: |
             dist/github-contribution-grid-snake.svg
+            svg_configuration: '{"color_empty":"transparent","color_0":"transparent","color_1":"transparent","color_2":"transparent","color_3":"transparent","color_4":"transparent","color_border":"#ffffffaa","color_snake":"purple"}'
 
       - name: Commit animation
         uses: EndBug/add-and-commit@v9
