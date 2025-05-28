@@ -25,7 +25,7 @@ jobs:
 
           # Borda branca mais fina
           sed -i 's/stroke-width:1px;/stroke-width:0.5px;/g' dist/github-contribution-grid-snake.svg
-          sed -i 's/stroke:var(--cb);/stroke:#ffffff;/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/stroke:var(--cb);/stroke:#383636d1;/g' dist/github-contribution-grid-snake.svg
 
           # Remove os fills dos quadradinhos com commits (cores)
           sed -i 's/fill:var(--c[0-4]);/fill:none;/g' dist/github-contribution-grid-snake.svg
