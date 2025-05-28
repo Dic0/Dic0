@@ -1,49 +1,41 @@
-name: Update Age in README
+name: Atualizar idade automaticamente
 
 on:
   schedule:
     - cron: '0 0 * * *'  # roda todo dia à meia-noite UTC
-  workflow_dispatch:
+  workflow_dispatch: # permite rodar manualmente
 
 jobs:
   update-age:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+    - name: Checkout do código
+      uses: actions/checkout@v3
 
-      - name: Set birth date variables
-        run: |
-          echo "BIRTH_YEAR=2004" >> $GITHUB_ENV
-          echo "BIRTH_MONTH=08" >> $GITHUB_ENV
-          echo "BIRTH_DAY=20" >> $GITHUB_ENV
+    - name: Calcular idade e substituir no README
+      run: |
+        # Configurar data de nascimento
+        BIRTH_YEAR=2004
+        BIRTH_MONTH=8
+        BIRTH_DAY=20
 
-      - name: Calculate age and update README
-        run: |
-          CURRENT_YEAR=$(date +'%Y')
-          CURRENT_MONTH=$(date +'%m')
-          CURRENT_DAY=$(date +'%d')
+        TODAY=$(date +%Y-%m-%d)
+        BIRTH_DATE="$BIRTH_YEAR-$BIRTH_MONTH-$BIRTH_DAY"
 
-          AGE=$((CURRENT_YEAR - BIRTH_YEAR))
+        AGE=$(($(date +%Y) - BIRTH_YEAR))
+        # Ajustar se o aniversário ainda não passou neste ano
+        if [[ "$(date +%m%d)" < $(printf "%02d%02d" $BIRTH_MONTH $BIRTH_DAY) ]]; then
+          AGE=$((AGE - 1))
+        fi
 
-          if [ "$CURRENT_MONTH" -lt "$BIRTH_MONTH" ] || { [ "$CURRENT_MONTH" -eq "$BIRTH_MONTH" ] && [ "$CURRENT_DAY" -lt "$BIRTH_DAY" ]; }; then
-            AGE=$((AGE - 1))
-          fi
+        echo "Idade calculada: $AGE"
 
-          echo "Current date: $CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DAY"
-          echo "Birth date: $BIRTH_YEAR-$BIRTH_MONTH-$BIRTH_DAY"
-          echo "Calculated age: $AGE"
+        # Substituir __AGE__ pelo valor calculado no README.md
+        sed -i "s/__AGE__/${AGE}/g" README.md
 
-          sed -i "s/__AGE__/${AGE}/g" README.md
-
-      - name: Commit and push changes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          if ! git diff --quiet README.md; then
-            git add README.md
-            git commit -m "Update age to $AGE"
-            git push
-          else
-            echo "No changes in README.md"
-          fi
+    - name: Commit e push das mudanças
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: "Atualizar idade para ${{ steps.update-age.outputs.age }}"
+        file_pattern: README.md
