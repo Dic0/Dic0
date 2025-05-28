@@ -33,8 +33,20 @@ jobs:
           sed -i 's/{fill:var(--c[0-4]);/{fill:none;/g' dist/github-contribution-grid-snake.svg
           sed -i 's/{fill:var(--c[0-4][a-z]*);/{fill:none;/g' dist/github-contribution-grid-snake.svg
 
-          # Corrige os keyframes: quando a cobrinha passa, volta pra transparente
+          # Ajusta os keyframes para que os quadrados fiquem transparentes depois que a cobrinha passa
           sed -i 's/fill:var(--ce)/fill:none/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/55.12%,100%{fill:var(--ce)}/55.12%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/25.79%,100%{fill:var(--ce)}/25.79%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/24.9%,100%{fill:var(--ce)}/24.9%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/60.9%,100%{fill:var(--ce)}/60.9%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/14.23%,100%{fill:var(--ce)}/14.23%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/11.57%,100%{fill:var(--ce)}/11.57%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/20.45%,100%{fill:var(--ce)}/20.45%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/18.23%,100%{fill:var(--ce)}/18.23%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/35.57%,100%{fill:var(--ce)}/35.57%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/38.68%,100%{fill:var(--ce)}/38.68%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/74.23%,100%{fill:var(--ce)}/74.23%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/74.68%,100%{fill:var(--ce)}/74.68%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
 
       - name: Commit animation
         uses: EndBug/add-and-commit@v9
