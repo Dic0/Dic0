@@ -2,51 +2,35 @@ name: Update Age in README
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Roda todo dia à meia-noite UTC
-  workflow_dispatch:
+    - cron: "0 0 * * *" # todos os dias à meia-noite
+  workflow_dispatch: # para rodar manualmente
 
 jobs:
-  update-age:
+  update-readme:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout branch output
-        uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v4
         with:
-          ref: output
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
+          ref: main
 
       - name: Calculate age
-        id: get_age
+        id: calc
         run: |
-          birth_year=2004
-          birth_month=8
-          birth_day=20
+          BIRTH_DATE="2004-08-20" # substitua pela sua data de nascimento real
+          TODAY=$(date +%Y-%m-%d)
+          AGE=$(($(date -d "$TODAY" +%s) - $(date -d "$BIRTH_DATE" +%s)))
+          AGE=$(($AGE / 31556952)) # segundos por ano
+          echo "AGE=$AGE" >> $GITHUB_ENV
 
-          today=$(date -u +"%Y-%m-%d")
-          today_year=$(date -u +"%Y")
-          today_month=$(date -u +"%m")
-          today_day=$(date -u +"%d")
-
-          age=$((today_year - birth_year))
-          if [ "$today_month" -lt "$birth_month" ] || { [ "$today_month" -eq "$birth_month" ] && [ "$today_day" -lt "$birth_day" ]; }; then
-            age=$((age - 1))
-          fi
-
-          echo "AGE=$age" >> $GITHUB_ENV
-
-      - name: Replace age placeholder in README.md
-        run: |
-          sed -i "s/__AGE__/${AGE}/g" README.md
+      - name: Replace __AGE__ placeholder in README
+        run: sed -i "s/__AGE__/${AGE}/g" README.md
 
       - name: Commit and push changes
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add README.md
-          git commit -m "Update age to ${AGE}" || echo "No changes to commit"
-          git push origin output
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: "Update age in README"
+          add: "README.md"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
