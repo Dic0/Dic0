@@ -2,7 +2,7 @@ name: Generate Snake Animation
 
 on:
   schedule:
-    - cron: "0 0 * * *" # roda todo dia à meia-noite
+    - cron: "0 0 * * *" # Roda todo dia à meia-noite
   workflow_dispatch:
 
 jobs:
@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: npm install fs-extra
 
-      - name: Adjust SVG with emoji snake
+      - name: Ajustar SVG com emojis da cobrinha
         run: |
           node scripts/adjust-snake-emoji.js
 
