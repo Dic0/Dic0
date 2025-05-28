@@ -9,16 +9,23 @@ jobs:
   generate:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
       - uses: Platane/snk@v3
         with:
           github_user_name: Dic0
           outputs: |
             dist/github-contribution-grid-snake.svg
+
       - name: Commit animation
         uses: EndBug/add-and-commit@v9
         with:
           message: "generated snake animation"
           add: "dist/github-contribution-grid-snake.svg"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Push to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
