@@ -1,20 +1,19 @@
-# .github/workflows/update-age.yml
 name: Update Age in README
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Executa todo dia à meia-noite (UTC)
-  workflow_dispatch: # Permite rodar manualmente
+    - cron: '0 0 * * *'  # Roda todo dia à meia-noite UTC
+  workflow_dispatch:
 
 jobs:
   update-age:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout branch output
         uses: actions/checkout@v3
         with:
-          ref: output # ⬅️ ATENÇÃO: usa o branch 'output'
+          ref: output
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -40,13 +39,14 @@ jobs:
 
           echo "AGE=$age" >> $GITHUB_ENV
 
-      - name: Replace age placeholder
+      - name: Replace age placeholder in README.md
         run: |
           sed -i "s/__AGE__/${AGE}/g" README.md
 
-      - name: Commit changes
+      - name: Commit and push changes
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git commit -am "Update age to ${AGE}" || echo "No changes to commit"
-          git push origin output # ⬅️ Empurra para o branch 'output'
+          git add README.md
+          git commit -m "Update age to ${AGE}" || echo "No changes to commit"
+          git push origin output
