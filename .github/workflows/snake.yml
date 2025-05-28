@@ -31,11 +31,11 @@ jobs:
             echo "color_snake=#ff6f59" >> $GITHUB_OUTPUT       # Halloween
             echo "color_border=#3d3d3d" >> $GITHUB_OUTPUT
             echo "emoji=🎃" >> $GITHUB_OUTPUT
-          elif [ "$TODAY" = "12-31" ]; then
+          elif [ "$TODAY" = "05-28" ]; then
             echo "color_snake=#ffe066" >> $GITHUB_OUTPUT       # Ano Novo
             echo "color_border=#ffd60a" >> $GITHUB_OUTPUT
             echo "emoji=✨" >> $GITHUB_OUTPUT
-          elif [ "$TODAY" = "05-28" ]; then
+          elif [ "$TODAY" = "08-20" ]; then
             echo "color_snake=#ff007f" >> $GITHUB_OUTPUT       # Aniversário
             echo "color_border=#ffffff" >> $GITHUB_OUTPUT
             echo "emoji=🎂" >> $GITHUB_OUTPUT
