@@ -17,13 +17,21 @@ jobs:
           github_user_name: Dic0
           outputs: |
             dist/github-contribution-grid-snake.svg
-            
+
       - name: Ajustar SVG para fundo transparente e bordas
         run: |
+          # Deixa o fundo dos quadradinhos transparente
           sed -i 's/fill:var(--ce);/fill:none;/g' dist/github-contribution-grid-snake.svg
+
+          # Borda branca e mais fina
           sed -i 's/stroke-width:1px;/stroke-width:0.5px;/g' dist/github-contribution-grid-snake.svg
           sed -i 's/stroke:var(--cb);/stroke:#ffffff;/g' dist/github-contribution-grid-snake.svg
 
+          # Remove os fills verdes dos commits e animações
+          sed -i 's/fill:var(--c[0-4]);/fill:none;/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/fill:var(--c[0-4][a-z]*);/fill:none;/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/{fill:var(--c[0-4]);/{fill:none;/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/{fill:var(--c[0-4][a-z]*);/{fill:none;/g' dist/github-contribution-grid-snake.svg
 
       - name: Commit animation
         uses: EndBug/add-and-commit@v9
