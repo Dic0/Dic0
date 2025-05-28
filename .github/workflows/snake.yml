@@ -2,7 +2,7 @@ name: Generate Snake Animation
 
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 0 * * *" # roda todo dia à meia-noite
   workflow_dispatch:
 
 jobs:
@@ -12,97 +12,41 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Create dist directory
-        run: mkdir -p dist
-
-      - name: Set theme variables
-        id: theme-vars
-        run: |
-          TODAY=$(date +%m-%d)
-          if [ "$TODAY" = "12-25" ]; then
-            echo "color_snake=#d90429" >> $GITHUB_OUTPUT       # Natal
-            echo "color_border=#a4133c" >> $GITHUB_OUTPUT
-            echo "emoji=🎅🏼" >> $GITHUB_OUTPUT
-          elif [ "$TODAY" = "10-31" ]; then
-            echo "color_snake=#ff6f59" >> $GITHUB_OUTPUT       # Halloween
-            echo "color_border=#3d3d3d" >> $GITHUB_OUTPUT
-            echo "emoji=🎃" >> $GITHUB_OUTPUT
-          elif [ "$TODAY" = "12-31" ]; then
-            echo "color_snake=#ffe066" >> $GITHUB_OUTPUT       # Ano Novo
-            echo "color_border=#ffd60a" >> $GITHUB_OUTPUT
-            echo "emoji=✨" >> $GITHUB_OUTPUT
-          elif [ "$TODAY" = "08-20" ]; then
-            echo "color_snake=#ff007f" >> $GITHUB_OUTPUT       # Aniversário
-            echo "color_border=#ffffff" >> $GITHUB_OUTPUT
-            echo "emoji=🎂" >> $GITHUB_OUTPUT
-          else
-            echo "color_snake=purple" >> $GITHUB_OUTPUT
-            echo "color_border=#ffffff" >> $GITHUB_OUTPUT
-            echo "emoji=" >> $GITHUB_OUTPUT
-          fi
-
       - uses: Platane/snk@v3
         with:
           github_user_name: Dic0
-          outputs: dist/github-contribution-grid-snake.svg
+          outputs: |
+            dist/github-contribution-grid-snake.svg
 
-      - name: Debug - List files
-        run: ls -la dist/
-
-      - name: Personalizar SVG
+      - name: Ajustar SVG para fundo transparente e bordas
         run: |
-          FILE="dist/github-contribution-grid-snake.svg"
-          COLOR_SNAKE="${{ steps.theme-vars.outputs.color_snake }}"
-          COLOR_BORDER="${{ steps.theme-vars.outputs.color_border }}"
+          # Deixa os quadradinhos sem fundo
+          sed -i 's/fill:var(--ce);/fill:none;/g' dist/github-contribution-grid-snake.svg
 
-          # Cobrinha: mudar cor
-          sed -i "s/fill:purple;/fill:${COLOR_SNAKE};/g" "$FILE"
+          # Borda branca mais fina
+          sed -i 's/stroke-width:1px;/stroke-width:0.5px;/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/stroke:var(--cb);/stroke:#ffffff;/g' dist/github-contribution-grid-snake.svg
 
-          # Quadradinhos sem commit: manter transparentes
-          sed -i 's/fill:var(--ce);/fill:none;/g' "$FILE"
-          sed -i 's/fill:var(--c[0-4]);/fill:none;/g' "$FILE"
-          sed -i 's/fill:var(--c[0-4][a-z]*);/fill:none;/g' "$FILE"
-          sed -i 's/{fill:var(--c[0-4]);/{fill:none;/g' "$FILE"
-          sed -i 's/{fill:var(--c[0-4][a-z]*);/{fill:none;/g' "$FILE"
+          # Remove os fills dos quadradinhos com commits (cores)
+          sed -i 's/fill:var(--c[0-4]);/fill:none;/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/fill:var(--c[0-4][a-z]*);/fill:none;/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/{fill:var(--c[0-4]);/{fill:none;/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/{fill:var(--c[0-4][a-z]*);/{fill:none;/g' dist/github-contribution-grid-snake.svg
 
-          # Bordas nos quadradinhos
-          sed -i "s/stroke:var(--cb);/stroke:${COLOR_BORDER};/g" "$FILE"
-          sed -i 's/stroke-width:1px;/stroke-width:0.5px;/g' "$FILE"
-
-      - name: Substituir commits por emojis nos dias especiais
-        if: ${{ steps.theme-vars.outputs.emoji != '' }}
-        run: |
-          node <<EOF
-          const fs = require('fs');
-          const file = 'dist/github-contribution-grid-snake.svg';
-          const emoji = "${{ steps.theme-vars.outputs.emoji }}";
-          let svg = fs.readFileSync(file, 'utf8');
-          svg = svg.replace(/<rect class="c"[^>]*x="([\d.]+)"[^>]*y="([\d.]+)"[^>]*width="([\d.]+)"[^>]*height="([\d.]+)"[^>]*\/>/g,
-            (match, x, y, w, h) => {
-              const fontSize = Math.min(parseFloat(w), parseFloat(h));
-              const adjustedX = parseFloat(x) + fontSize / 2;
-              const adjustedY = parseFloat(y) + fontSize * 0.75;
-              return `<text x="${adjustedX}" y="${adjustedY}" font-size="${fontSize}" text-anchor="middle">${emoji}</text>`;
-            });
-          fs.writeFileSync(file, svg);
-          EOF
-
-      - name: Bordas arco-íris no aniversário
-        if: ${{ steps.theme-vars.outputs.color_snake == '#ff007f' }}
-        run: |
-          node <<EOF
-          const fs = require('fs');
-          const path = 'dist/github-contribution-grid-snake.svg';
-          const rainbow = ['#ff0000','#ff7f00','#ffff00','#00ff00','#0000ff','#4b0082','#8a2be2','#ff1493'];
-          let svg = fs.readFileSync(path, 'utf8');
-          let i = 0;
-          svg = svg.replace(/stroke="#ffffff"/g, () => {
-            const c = rainbow[i % rainbow.length];
-            i++;
-            return `stroke="${c}"`;
-          });
-          fs.writeFileSync(path, svg);
-          EOF
+          # Ajusta os keyframes para que os quadrados fiquem transparentes depois que a cobrinha passa
+          sed -i 's/fill:var(--ce)/fill:none/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/55.12%,100%{fill:var(--ce)}/55.12%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/25.79%,100%{fill:var(--ce)}/25.79%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/24.9%,100%{fill:var(--ce)}/24.9%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/60.9%,100%{fill:var(--ce)}/60.9%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/14.23%,100%{fill:var(--ce)}/14.23%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/11.57%,100%{fill:var(--ce)}/11.57%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/20.45%,100%{fill:var(--ce)}/20.45%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/18.23%,100%{fill:var(--ce)}/18.23%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/35.57%,100%{fill:var(--ce)}/35.57%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/38.68%,100%{fill:var(--ce)}/38.68%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/74.23%,100%{fill:var(--ce)}/74.23%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/74.68%,100%{fill:var(--ce)}/74.68%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
 
       - name: Commit animation
         uses: EndBug/add-and-commit@v9
@@ -117,4 +61,3 @@ jobs:
         with:
           branch: output
           folder: dist
-          clean: false
