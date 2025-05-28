@@ -26,7 +26,7 @@ jobs:
             # Natal
             echo "color_snake=#d90429" >> $GITHUB_OUTPUT
             echo "color_border=#a4133c" >> $GITHUB_OUTPUT
-          elif [ "$TODAY" = "10-31" ]; then
+          elif [ "$TODAY" = "05-28" ]; then
             # Halloween
             echo "color_snake=#ff6f59" >> $GITHUB_OUTPUT
             echo "color_border=#3d3d3d" >> $GITHUB_OUTPUT
@@ -34,7 +34,7 @@ jobs:
             # Ano Novo
             echo "color_snake=#ffe066" >> $GITHUB_OUTPUT
             echo "color_border=#ffd60a" >> $GITHUB_OUTPUT
-          elif [ "$TODAY" = "05-28" ]; then
+          elif [ "$TODAY" = "08-20" ]; then
             # Aniversário - só a cobrinha rosa (bordas serão arco-íris no passo seguinte)
             echo "color_snake=#ff007f" >> $GITHUB_OUTPUT
             echo "color_border=#ffffff" >> $GITHUB_OUTPUT
