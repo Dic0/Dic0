@@ -23,9 +23,9 @@ jobs:
       - name: Calculate age
         id: get_age
         run: |
-          birth_year=2006
-          birth_month=5
-          birth_day=28
+          birth_year=2004
+          birth_month=8
+          birth_day=20
 
           today=$(date -u +"%Y-%m-%d")
           today_year=$(date -u +"%Y")
