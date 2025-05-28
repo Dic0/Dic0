@@ -12,41 +12,24 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - uses: Platane/snk@v3
+      - name: Run Platane Snake generator
+        uses: Platane/snk@v3
         with:
           github_user_name: Dic0
           outputs: |
             dist/github-contribution-grid-snake.svg
 
-      - name: Ajustar SVG para fundo transparente e bordas
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install fs-extra
+
+      - name: Adjust SVG with emoji snake
         run: |
-          # Deixa os quadradinhos sem fundo
-          sed -i 's/fill:var(--ce);/fill:none;/g' dist/github-contribution-grid-snake.svg
-
-          # Borda branca mais fina
-          sed -i 's/stroke-width:1px;/stroke-width:0.5px;/g' dist/github-contribution-grid-snake.svg
-          sed -i 's/stroke:var(--cb);/stroke:#ffffff;/g' dist/github-contribution-grid-snake.svg
-
-          # Remove os fills dos quadradinhos com commits (cores)
-          sed -i 's/fill:var(--c[0-4]);/fill:none;/g' dist/github-contribution-grid-snake.svg
-          sed -i 's/fill:var(--c[0-4][a-z]*);/fill:none;/g' dist/github-contribution-grid-snake.svg
-          sed -i 's/{fill:var(--c[0-4]);/{fill:none;/g' dist/github-contribution-grid-snake.svg
-          sed -i 's/{fill:var(--c[0-4][a-z]*);/{fill:none;/g' dist/github-contribution-grid-snake.svg
-
-          # Ajusta os keyframes para que os quadrados fiquem transparentes depois que a cobrinha passa
-          sed -i 's/fill:var(--ce)/fill:none/g' dist/github-contribution-grid-snake.svg
-          sed -i 's/55.12%,100%{fill:var(--ce)}/55.12%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
-          sed -i 's/25.79%,100%{fill:var(--ce)}/25.79%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
-          sed -i 's/24.9%,100%{fill:var(--ce)}/24.9%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
-          sed -i 's/60.9%,100%{fill:var(--ce)}/60.9%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
-          sed -i 's/14.23%,100%{fill:var(--ce)}/14.23%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
-          sed -i 's/11.57%,100%{fill:var(--ce)}/11.57%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
-          sed -i 's/20.45%,100%{fill:var(--ce)}/20.45%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
-          sed -i 's/18.23%,100%{fill:var(--ce)}/18.23%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
-          sed -i 's/35.57%,100%{fill:var(--ce)}/35.57%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
-          sed -i 's/38.68%,100%{fill:var(--ce)}/38.68%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
-          sed -i 's/74.23%,100%{fill:var(--ce)}/74.23%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
-          sed -i 's/74.68%,100%{fill:var(--ce)}/74.68%,100%{fill:none}/g' dist/github-contribution-grid-snake.svg
+          node scripts/adjust-snake-emoji.js
 
       - name: Commit animation
         uses: EndBug/add-and-commit@v9
