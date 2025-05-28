@@ -1,41 +1,52 @@
-name: Atualizar idade automaticamente
+# .github/workflows/update-age.yml
+name: Update Age in README
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # roda todo dia à meia-noite UTC
-  workflow_dispatch: # permite rodar manualmente
+    - cron: '0 0 * * *' # Executa todo dia à meia-noite (UTC)
+  workflow_dispatch: # Permite rodar manualmente
 
 jobs:
   update-age:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout do código
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: output # ⬅️ ATENÇÃO: usa o branch 'output'
 
-    - name: Calcular idade e substituir no README
-      run: |
-        # Configurar data de nascimento
-        BIRTH_YEAR=2004
-        BIRTH_MONTH=8
-        BIRTH_DAY=20
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-        TODAY=$(date +%Y-%m-%d)
-        BIRTH_DATE="$BIRTH_YEAR-$BIRTH_MONTH-$BIRTH_DAY"
+      - name: Calculate age
+        id: get_age
+        run: |
+          birth_year=2006
+          birth_month=5
+          birth_day=28
 
-        AGE=$(($(date +%Y) - BIRTH_YEAR))
-        # Ajustar se o aniversário ainda não passou neste ano
-        if [[ "$(date +%m%d)" < $(printf "%02d%02d" $BIRTH_MONTH $BIRTH_DAY) ]]; then
-          AGE=$((AGE - 1))
-        fi
+          today=$(date -u +"%Y-%m-%d")
+          today_year=$(date -u +"%Y")
+          today_month=$(date -u +"%m")
+          today_day=$(date -u +"%d")
 
-        echo "Idade calculada: $AGE"
+          age=$((today_year - birth_year))
+          if [ "$today_month" -lt "$birth_month" ] || { [ "$today_month" -eq "$birth_month" ] && [ "$today_day" -lt "$birth_day" ]; }; then
+            age=$((age - 1))
+          fi
 
-        # Substituir __AGE__ pelo valor calculado no README.md
-        sed -i "s/__AGE__/${AGE}/g" README.md
+          echo "AGE=$age" >> $GITHUB_ENV
 
-    - name: Commit e push das mudanças
-      uses: stefanzweifel/git-auto-commit-action@v4
-      with:
-        commit_message: "Atualizar idade para ${{ steps.update-age.outputs.age }}"
-        file_pattern: README.md
+      - name: Replace age placeholder
+        run: |
+          sed -i "s/__AGE__/${AGE}/g" README.md
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git commit -am "Update age to ${AGE}" || echo "No changes to commit"
+          git push origin output # ⬅️ Empurra para o branch 'output'
