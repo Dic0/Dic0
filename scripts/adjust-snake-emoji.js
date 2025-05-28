@@ -26,7 +26,7 @@ async function run() {
     const day = now.getDate();
     const month = now.getMonth() + 1;
 
-    if (month === 12 && day >= 15 && day <= 31) return emojisByTheme.natal;
+    if (month === 5 && day >= 15 && day <= 31) return emojisByTheme.natal;
     if (month === 10 && day >= 25 && day <= 31) return emojisByTheme.halloween;
     if (month === 8 && day === 20) return emojisByTheme.aniversario;
     if (month === 1 && day <= 7) return emojisByTheme.anoNovo;
