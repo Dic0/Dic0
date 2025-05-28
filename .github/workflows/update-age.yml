@@ -1,0 +1,49 @@
+name: Update Age in README
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # roda todo dia à meia-noite UTC
+  workflow_dispatch:
+
+jobs:
+  update-age:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set birth date variables
+        run: |
+          echo "BIRTH_YEAR=2004" >> $GITHUB_ENV
+          echo "BIRTH_MONTH=08" >> $GITHUB_ENV
+          echo "BIRTH_DAY=20" >> $GITHUB_ENV
+
+      - name: Calculate age and update README
+        run: |
+          CURRENT_YEAR=$(date +'%Y')
+          CURRENT_MONTH=$(date +'%m')
+          CURRENT_DAY=$(date +'%d')
+
+          AGE=$((CURRENT_YEAR - BIRTH_YEAR))
+
+          if [ "$CURRENT_MONTH" -lt "$BIRTH_MONTH" ] || { [ "$CURRENT_MONTH" -eq "$BIRTH_MONTH" ] && [ "$CURRENT_DAY" -lt "$BIRTH_DAY" ]; }; then
+            AGE=$((AGE - 1))
+          fi
+
+          echo "Current date: $CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DAY"
+          echo "Birth date: $BIRTH_YEAR-$BIRTH_MONTH-$BIRTH_DAY"
+          echo "Calculated age: $AGE"
+
+          sed -i "s/__AGE__/${AGE}/g" README.md
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if ! git diff --quiet README.md; then
+            git add README.md
+            git commit -m "Update age to $AGE"
+            git push
+          else
+            echo "No changes in README.md"
+          fi
