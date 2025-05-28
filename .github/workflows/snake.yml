@@ -20,8 +20,9 @@ jobs:
             
       - name: Ajustar SVG para fundo transparente e bordas
         run: |
-          sed -i 's/fill:#ebedf0;/fill:none;/g' dist/github-contribution-grid-snake.svg
-          sed -i 's/stroke:#1b1f23;/stroke:#ffffffaa;/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/fill:var(--ce);/fill:none;/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/stroke-width:1px;/stroke-width:0.5px;/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/stroke:var(--cb);/stroke:#ffffff;/g' dist/github-contribution-grid-snake.svg
 
 
       - name: Commit animation
