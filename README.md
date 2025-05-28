@@ -28,19 +28,12 @@
 ##
 
 <!-- Social Links -->
-<div align="center"> 
-  <a href="https://instagram.com/dieric_wff" target="_blank">
-    <img src="https://img.shields.io/badge/-Instagram-%23E4405F?style=for-the-badge&logo=instagram&logoColor=white">
-  </a>
-  &nbsp;&nbsp;
-  <a href="mailto:dwdieric@gmail.com">
-    <img src="https://img.shields.io/badge/-Gmail-%23333?style=for-the-badge&logo=gmail&logoColor=white">
-  </a>
-  &nbsp;&nbsp;
-  <a href="https://www.linkedin.com/in/di%C3%A9ric-walendorff-187669239/" target="_blank">
-    <img src="https://img.shields.io/badge/-LinkedIn-%230077B5?style=for-the-badge&logo=linkedin&logoColor=white">
-  </a>
+<div align="center">
+  <a href="https://instagram.com/dieric_wff" target="_blank"><img src="https://img.shields.io/badge/-Instagram-%23E4405F?style=for-the-badge&logo=instagram&logoColor=white"></a>&nbsp;&nbsp;
+  <a href="mailto:dwdieric@gmail.com"><img src="https://img.shields.io/badge/-Gmail-%23333?style=for-the-badge&logo=gmail&logoColor=white"></a>&nbsp;&nbsp;
+  <a href="https://www.linkedin.com/in/di%C3%A9ric-walendorff-187669239/" target="_blank"><img src="https://img.shields.io/badge/-LinkedIn-%230077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a>
 </div>
+
 
 ##
 
