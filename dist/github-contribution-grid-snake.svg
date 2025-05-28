@@ -395,11 +395,11 @@
     <rect class="c" x="818" y="98" rx="2" ry="2" />
     <rect class="c" x="834" y="2" rx="2" ry="2" />
     <rect class="c" x="834" y="18" rx="2" ry="2" />
-    <rect class="c" x="834" y="34" rx="2" ry="2" />
-    <rect class="c" x="834" y="50" rx="2" ry="2" />
+    <rect class="c ca" x="834" y="34" rx="2" ry="2" />
+    <rect class="c cb" x="834" y="50" rx="2" ry="2" />
     <rect class="c" x="834" y="66" rx="2" ry="2" />
-    <rect class="c ca" x="834" y="82" rx="2" ry="2" />
-    <rect class="c cb" x="834" y="98" rx="2" ry="2" />
+    <rect class="c" x="834" y="82" rx="2" ry="2" />
+    <rect class="c" x="834" y="98" rx="2" ry="2" />
     <rect class="u u0" height="12" width="212.6" x="0.0" y="144" />
     <rect class="u u1" height="12" width="283.3" x="212.0" y="144" />
     <rect class="u u2" height="12" width="141.9" x="494.7" y="144" />
