@@ -2,36 +2,29 @@ name: Generate Snake Animation
 
 on:
   schedule:
-    - cron: "0 0 * * *" # Executa diariamente à meia-noite
+    - cron: "0 0 * * *"
   workflow_dispatch:
 
 jobs:
   generate:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout do repositório
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Gerar animação da cobrinha
-        uses: Platane/snk@v3
-        with:
-          github_user_name: Dic0
-          outputs: |
-            dist/github-contribution-grid-snake.svg
-
-      - name: Definir variáveis de tema
+      - name: Set theme variables
         id: theme-vars
         run: |
           TODAY=$(date +%m-%d)
           if [ "$TODAY" = "12-25" ]; then
             echo "color_snake=#d90429" >> $GITHUB_OUTPUT       # Natal
             echo "color_border=#a4133c" >> $GITHUB_OUTPUT
-            echo "emoji=🎅" >> $GITHUB_OUTPUT
+            echo "emoji=🎅🏼" >> $GITHUB_OUTPUT
           elif [ "$TODAY" = "10-31" ]; then
             echo "color_snake=#ff6f59" >> $GITHUB_OUTPUT       # Halloween
             echo "color_border=#3d3d3d" >> $GITHUB_OUTPUT
             echo "emoji=🎃" >> $GITHUB_OUTPUT
-          elif [ "$TODAY" = "05-28" ]; then
+          elif [ "$TODAY" = "12-31" ]; then
             echo "color_snake=#ffe066" >> $GITHUB_OUTPUT       # Ano Novo
             echo "color_border=#ffd60a" >> $GITHUB_OUTPUT
             echo "emoji=✨" >> $GITHUB_OUTPUT
@@ -40,42 +33,44 @@ jobs:
             echo "color_border=#ffffff" >> $GITHUB_OUTPUT
             echo "emoji=🎂" >> $GITHUB_OUTPUT
           else
-            echo "color_snake=purple" >> $GITHUB_OUTPUT        # Padrão
+            echo "color_snake=purple" >> $GITHUB_OUTPUT
             echo "color_border=#ffffff" >> $GITHUB_OUTPUT
             echo "emoji=" >> $GITHUB_OUTPUT
           fi
 
-      - name: Ajustar SVG para fundo transparente e bordas
+      - uses: Platane/snk@v3
+        with:
+          github_user_name: Dic0
+          outputs: dist/github-contribution-grid-snake.svg
+
+      - name: Personalizar SVG
         run: |
           FILE="dist/github-contribution-grid-snake.svg"
+          COLOR_SNAKE="${{ steps.theme-vars.outputs.color_snake }}"
+          COLOR_BORDER="${{ steps.theme-vars.outputs.color_border }}"
 
-          # Remover preenchimentos dos quadradinhos com commits e definir bordas
+          # Cobrinha: mudar cor
+          sed -i "s/fill:purple;/fill:${COLOR_SNAKE};/g" "$FILE"
+
+          # Quadradinhos sem commit: manter transparentes
           sed -i 's/fill:var(--ce);/fill:none;/g' "$FILE"
           sed -i 's/fill:var(--c[0-4]);/fill:none;/g' "$FILE"
           sed -i 's/fill:var(--c[0-4][a-z]*);/fill:none;/g' "$FILE"
           sed -i 's/{fill:var(--c[0-4]);/{fill:none;/g' "$FILE"
           sed -i 's/{fill:var(--c[0-4][a-z]*);/{fill:none;/g' "$FILE"
 
-          # Definir bordas nos quadradinhos
-          sed -i 's/stroke:var(--cb);/stroke:${{ steps.theme-vars.outputs.color_border }};/g' "$FILE"
+          # Bordas nos quadradinhos
+          sed -i "s/stroke:var(--cb);/stroke:${COLOR_BORDER};/g" "$FILE"
           sed -i 's/stroke-width:1px;/stroke-width:0.5px;/g' "$FILE"
 
-          # Corrigir qualquer fallback para var(--ce)
-          sed -i 's/fill:var(--ce)/fill:none/g' "$FILE"
-
-          # Ajustar a cor da cobrinha
-          sed -i "s/fill:purple;/fill:${{ steps.theme-vars.outputs.color_snake }};/g" "$FILE"
-
-      - name: Substituir quadradinhos com commits por emojis nos dias especiais
+      - name: Substituir commits por emojis nos dias especiais
         if: ${{ steps.theme-vars.outputs.emoji != '' }}
         run: |
-          node << 'EOF'
+          node <<EOF
           const fs = require('fs');
-          const path = 'dist/github-contribution-grid-snake.svg';
-          const emoji = '${{ steps.theme-vars.outputs.emoji }}';
-          let svg = fs.readFileSync(path, 'utf8');
-
-          // Substituir retângulos de commits por emojis
+          const file = 'dist/github-contribution-grid-snake.svg';
+          const emoji = "${{ steps.theme-vars.outputs.emoji }}";
+          let svg = fs.readFileSync(file, 'utf8');
           svg = svg.replace(/<rect class="c"[^>]*x="([\d.]+)"[^>]*y="([\d.]+)"[^>]*width="([\d.]+)"[^>]*height="([\d.]+)"[^>]*\/>/g,
             (match, x, y, w, h) => {
               const fontSize = Math.min(parseFloat(w), parseFloat(h));
@@ -83,30 +78,27 @@ jobs:
               const adjustedY = parseFloat(y) + fontSize * 0.75;
               return `<text x="${adjustedX}" y="${adjustedY}" font-size="${fontSize}" text-anchor="middle">${emoji}</text>`;
             });
-
-          fs.writeFileSync(path, svg);
+          fs.writeFileSync(file, svg);
           EOF
 
-      - name: Aplicar bordas arco-íris para aniversário
+      - name: Bordas arco-íris no aniversário
         if: ${{ steps.theme-vars.outputs.color_snake == '#ff007f' }}
         run: |
-          node << 'EOF'
+          node <<EOF
           const fs = require('fs');
           const path = 'dist/github-contribution-grid-snake.svg';
-          const colors = ['#ff0000','#ff7f00','#ffa500','#ffff00','#adff2f','#00ff00','#00fa9a','#00ffff','#0000ff','#4b0082','#8a2be2','#ee82ee','#ff69b4','#ff1493'];
-          let svg = fs.readFileSync(path, 'utf-8');
-          let idx = 0;
-
+          const rainbow = ['#ff0000','#ff7f00','#ffff00','#00ff00','#0000ff','#4b0082','#8a2be2','#ff1493'];
+          let svg = fs.readFileSync(path, 'utf8');
+          let i = 0;
           svg = svg.replace(/stroke="#ffffff"/g, () => {
-            const color = colors[idx % colors.length];
-            idx++;
-            return `stroke="${color}"`;
+            const c = rainbow[i % rainbow.length];
+            i++;
+            return `stroke="${c}"`;
           });
-
           fs.writeFileSync(path, svg);
           EOF
 
-      - name: Commit da animação
+      - name: Commit animation
         uses: EndBug/add-and-commit@v9
         with:
           message: "generated snake animation"
@@ -114,7 +106,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publicar no GitHub Pages
+      - name: Push to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: output
