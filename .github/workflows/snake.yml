@@ -2,7 +2,7 @@ name: Generate Snake Animation
 
 on:
   schedule:
-    - cron: "0 0 * * *" # Roda todo dia à meia-noite
+    - cron: "0 0 * * *" # roda todo dia à meia-noite
   workflow_dispatch:
 
 jobs:
@@ -12,24 +12,81 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Run Platane Snake generator
-        uses: Platane/snk@v3
+      - uses: Platane/snk@v3
         with:
           github_user_name: Dic0
           outputs: |
             dist/github-contribution-grid-snake.svg
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      - name: Install dependencies
-        run: npm install fs-extra
-
-      - name: Ajustar SVG com emojis da cobrinha
+      - name: Set theme variables
+        id: theme-vars
         run: |
-          node scripts/adjust-snake-emoji.js
+          TODAY=$(date +%m-%d)
+          if [ "$TODAY" = "12-25" ]; then
+            # Natal
+            echo "color_snake=#d90429" >> $GITHUB_OUTPUT
+            echo "color_border=#a4133c" >> $GITHUB_OUTPUT
+          elif [ "$TODAY" = "10-31" ]; then
+            # Halloween
+            echo "color_snake=#ff6f59" >> $GITHUB_OUTPUT
+            echo "color_border=#3d3d3d" >> $GITHUB_OUTPUT
+          elif [ "$TODAY" = "12-31" ]; then
+            # Ano Novo
+            echo "color_snake=#ffe066" >> $GITHUB_OUTPUT
+            echo "color_border=#ffd60a" >> $GITHUB_OUTPUT
+          elif [ "$TODAY" = "08-20" ]; then
+            # Aniversário - só a cobrinha rosa (bordas serão arco-íris no passo seguinte)
+            echo "color_snake=#ff007f" >> $GITHUB_OUTPUT
+            echo "color_border=#ffffff" >> $GITHUB_OUTPUT
+          else
+            # Default
+            echo "color_snake=purple" >> $GITHUB_OUTPUT
+            echo "color_border=#ffffff" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Ajustar SVG para fundo transparente e bordas
+        run: |
+          # Deixa os quadradinhos sem fundo
+          sed -i 's/fill:var(--ce);/fill:none;/g' dist/github-contribution-grid-snake.svg
+
+          # Borda branca mais fina (ou outra cor de acordo com o tema)
+          sed -i 's/stroke-width:1px;/stroke-width:0.5px;/g' dist/github-contribution-grid-snake.svg
+          sed -i "s/stroke:var(--cb);/stroke:${{ steps.theme-vars.outputs.color_border }};/g" dist/github-contribution-grid-snake.svg
+
+          # Remove os fills dos quadradinhos com commits (cores)
+          sed -i 's/fill:var(--c[0-4]);/fill:none;/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/fill:var(--c[0-4][a-z]*);/fill:none;/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/{fill:var(--c[0-4]);/{fill:none;/g' dist/github-contribution-grid-snake.svg
+          sed -i 's/{fill:var(--c[0-4][a-z]*);/{fill:none;/g' dist/github-contribution-grid-snake.svg
+
+          # Corrige os keyframes: quando a cobrinha passa, volta pra transparente
+          sed -i 's/fill:var(--ce)/fill:none/g' dist/github-contribution-grid-snake.svg
+
+          # Ajusta a cor da cobrinha
+          sed -i "s/fill:purple;/fill:${{ steps.theme-vars.outputs.color_snake }};/g" dist/github-contribution-grid-snake.svg
+
+      - name: Aplicar bordas arco-íris para aniversário
+        if: ${{ steps.theme-vars.outputs.color_snake == '#ff007f' }}
+        run: |
+          node << 'EOF'
+          const fs = require('fs');
+          const path = 'dist/github-contribution-grid-snake.svg';
+          const colors = [
+            '#ff0000', '#ffa500', '#ffff00', '#00ff00',
+            '#0000ff', '#4b0082', '#ee82ee'
+          ];
+          let svg = fs.readFileSync(path, 'utf-8');
+
+          // Regex para pegar os elementos dos quadradinhos (geralmente <rect ... stroke="#ffffff" ...>)
+          let idx = 0;
+          svg = svg.replace(/stroke="#ffffff"/g, () => {
+            const color = colors[idx % colors.length];
+            idx++;
+            return `stroke="${color}"`;
+          });
+
+          fs.writeFileSync(path, svg);
+          EOF
 
       - name: Commit animation
         uses: EndBug/add-and-commit@v9
