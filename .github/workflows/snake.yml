@@ -2,68 +2,90 @@ name: Generate Snake Animation
 
 on:
   schedule:
-    - cron: "0 0 * * *" # roda todo dia à meia-noite
+    - cron: "0 0 * * *" # Executa diariamente à meia-noite
   workflow_dispatch:
 
 jobs:
   generate:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Checkout do repositório
         uses: actions/checkout@v4
 
-      - uses: Platane/snk@v3
+      - name: Gerar animação da cobrinha
+        uses: Platane/snk@v3
         with:
           github_user_name: Dic0
           outputs: |
             dist/github-contribution-grid-snake.svg
 
-      - name: Set theme variables
+      - name: Definir variáveis de tema
         id: theme-vars
         run: |
           TODAY=$(date +%m-%d)
           if [ "$TODAY" = "12-25" ]; then
-            # Natal
-            echo "color_snake=#d90429" >> $GITHUB_OUTPUT
+            echo "color_snake=#d90429" >> $GITHUB_OUTPUT       # Natal
             echo "color_border=#a4133c" >> $GITHUB_OUTPUT
-          elif [ "$TODAY" = "05-28" ]; then
-            # Halloween
-            echo "color_snake=#ff6f59" >> $GITHUB_OUTPUT
+            echo "emoji=🎅" >> $GITHUB_OUTPUT
+          elif [ "$TODAY" = "10-31" ]; then
+            echo "color_snake=#ff6f59" >> $GITHUB_OUTPUT       # Halloween
             echo "color_border=#3d3d3d" >> $GITHUB_OUTPUT
+            echo "emoji=🎃" >> $GITHUB_OUTPUT
           elif [ "$TODAY" = "12-31" ]; then
-            # Ano Novo
-            echo "color_snake=#ffe066" >> $GITHUB_OUTPUT
+            echo "color_snake=#ffe066" >> $GITHUB_OUTPUT       # Ano Novo
             echo "color_border=#ffd60a" >> $GITHUB_OUTPUT
-          elif [ "$TODAY" = "08-20" ]; then
-            # Aniversário - só a cobrinha rosa (bordas serão arco-íris no passo seguinte)
-            echo "color_snake=#ff007f" >> $GITHUB_OUTPUT
+            echo "emoji=✨" >> $GITHUB_OUTPUT
+          elif [ "$TODAY" = "05-28" ]; then
+            echo "color_snake=#ff007f" >> $GITHUB_OUTPUT       # Aniversário
             echo "color_border=#ffffff" >> $GITHUB_OUTPUT
+            echo "emoji=🎂" >> $GITHUB_OUTPUT
           else
-            # Default
-            echo "color_snake=purple" >> $GITHUB_OUTPUT
+            echo "color_snake=purple" >> $GITHUB_OUTPUT        # Padrão
             echo "color_border=#ffffff" >> $GITHUB_OUTPUT
+            echo "emoji=" >> $GITHUB_OUTPUT
           fi
 
       - name: Ajustar SVG para fundo transparente e bordas
         run: |
-          # Deixa os quadradinhos sem fundo
-          sed -i 's/fill:var(--ce);/fill:none;/g' dist/github-contribution-grid-snake.svg
+          FILE="dist/github-contribution-grid-snake.svg"
 
-          # Borda branca mais fina (ou outra cor de acordo com o tema)
-          sed -i 's/stroke-width:1px;/stroke-width:0.5px;/g' dist/github-contribution-grid-snake.svg
-          sed -i "s/stroke:var(--cb);/stroke:${{ steps.theme-vars.outputs.color_border }};/g" dist/github-contribution-grid-snake.svg
+          # Remover preenchimentos dos quadradinhos com commits e definir bordas
+          sed -i 's/fill:var(--ce);/fill:none;/g' "$FILE"
+          sed -i 's/fill:var(--c[0-4]);/fill:none;/g' "$FILE"
+          sed -i 's/fill:var(--c[0-4][a-z]*);/fill:none;/g' "$FILE"
+          sed -i 's/{fill:var(--c[0-4]);/{fill:none;/g' "$FILE"
+          sed -i 's/{fill:var(--c[0-4][a-z]*);/{fill:none;/g' "$FILE"
 
-          # Remove os fills dos quadradinhos com commits (cores)
-          sed -i 's/fill:var(--c[0-4]);/fill:none;/g' dist/github-contribution-grid-snake.svg
-          sed -i 's/fill:var(--c[0-4][a-z]*);/fill:none;/g' dist/github-contribution-grid-snake.svg
-          sed -i 's/{fill:var(--c[0-4]);/{fill:none;/g' dist/github-contribution-grid-snake.svg
-          sed -i 's/{fill:var(--c[0-4][a-z]*);/{fill:none;/g' dist/github-contribution-grid-snake.svg
+          # Definir bordas nos quadradinhos
+          sed -i 's/stroke:var(--cb);/stroke:${{ steps.theme-vars.outputs.color_border }};/g' "$FILE"
+          sed -i 's/stroke-width:1px;/stroke-width:0.5px;/g' "$FILE"
 
-          # Corrige os keyframes: quando a cobrinha passa, volta pra transparente
-          sed -i 's/fill:var(--ce)/fill:none/g' dist/github-contribution-grid-snake.svg
+          # Corrigir qualquer fallback para var(--ce)
+          sed -i 's/fill:var(--ce)/fill:none/g' "$FILE"
 
-          # Ajusta a cor da cobrinha
-          sed -i "s/fill:purple;/fill:${{ steps.theme-vars.outputs.color_snake }};/g" dist/github-contribution-grid-snake.svg
+          # Ajustar a cor da cobrinha
+          sed -i "s/fill:purple;/fill:${{ steps.theme-vars.outputs.color_snake }};/g" "$FILE"
+
+      - name: Substituir quadradinhos com commits por emojis nos dias especiais
+        if: ${{ steps.theme-vars.outputs.emoji != '' }}
+        run: |
+          node << 'EOF'
+          const fs = require('fs');
+          const path = 'dist/github-contribution-grid-snake.svg';
+          const emoji = '${{ steps.theme-vars.outputs.emoji }}';
+          let svg = fs.readFileSync(path, 'utf8');
+
+          // Substituir retângulos de commits por emojis
+          svg = svg.replace(/<rect class="c"[^>]*x="([\d.]+)"[^>]*y="([\d.]+)"[^>]*width="([\d.]+)"[^>]*height="([\d.]+)"[^>]*\/>/g,
+            (match, x, y, w, h) => {
+              const fontSize = Math.min(parseFloat(w), parseFloat(h));
+              const adjustedX = parseFloat(x) + fontSize / 2;
+              const adjustedY = parseFloat(y) + fontSize * 0.75;
+              return `<text x="${adjustedX}" y="${adjustedY}" font-size="${fontSize}" text-anchor="middle">${emoji}</text>`;
+            });
+
+          fs.writeFileSync(path, svg);
+          EOF
 
       - name: Aplicar bordas arco-íris para aniversário
         if: ${{ steps.theme-vars.outputs.color_snake == '#ff007f' }}
@@ -71,14 +93,10 @@ jobs:
           node << 'EOF'
           const fs = require('fs');
           const path = 'dist/github-contribution-grid-snake.svg';
-          const colors = [
-            '#ff0000', '#ffa500', '#ffff00', '#00ff00',
-            '#0000ff', '#4b0082', '#ee82ee'
-          ];
+          const colors = ['#ff0000','#ff7f00','#ffa500','#ffff00','#adff2f','#00ff00','#00fa9a','#00ffff','#0000ff','#4b0082','#8a2be2','#ee82ee','#ff69b4','#ff1493'];
           let svg = fs.readFileSync(path, 'utf-8');
-
-          // Regex para pegar os elementos dos quadradinhos (geralmente <rect ... stroke="#ffffff" ...>)
           let idx = 0;
+
           svg = svg.replace(/stroke="#ffffff"/g, () => {
             const color = colors[idx % colors.length];
             idx++;
@@ -88,7 +106,7 @@ jobs:
           fs.writeFileSync(path, svg);
           EOF
 
-      - name: Commit animation
+      - name: Commit da animação
         uses: EndBug/add-and-commit@v9
         with:
           message: "generated snake animation"
@@ -96,7 +114,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Push to GitHub Pages
+      - name: Publicar no GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: output
