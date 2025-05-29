@@ -13,6 +13,12 @@
     <img height="180em" src="https://github-readme-stats.vercel.app/api/top-langs/?username=Dic0&layout=compact&langs_count=7&theme=dark"/>
 </div>
 
+## 
+
+<p align="center">
+  <img src="https://github-readme-activity-graph.vercel.app/graph?username=Dic0&theme=react-dark&bg_color=0D1117&hide_border=true" alt="GitHub Activity Graph"/>
+</p>
+
 <!-- Tech Stack -->
 <div align="center" style="display: inline_block"><br>
   <img align="center" alt="Dic0-Js" height="30" width="40" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-plain.svg">
