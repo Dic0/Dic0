@@ -5,7 +5,7 @@
 [![Typing SVG](https://readme-typing-svg.herokuapp.com?color=5BCDEC&size=35&center=true&vCenter=true&width=1000&lines=HELLO+GUYS!+🤙;My+name's+Diéric+Walendorff;I'm+20+years+old;I'm+from+Brazil,+SC;Be+Welcome!+:%29)](https://git.io/typing-svg)
 
 ##
-
+ 
 <!-- GitHub Stats -->
 <div align="center">
     <br>
@@ -21,8 +21,11 @@
 </p>
 
 ##
+
+[![Typing SVG](https://readme-typing-svg.herokuapp.com?color=5BCDEC&size=20&center=true&vCenter=true&width=1000&lines=TECH+STACK!)](https://git.io/typing-svg)
+
 <!-- Tech Stack -->
-<div align="center" style="display: inline_block"><br>
+<div align="center" style="display: inline_block">
   <img align="center" alt="Dic0-Js" height="30" width="40" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg">
   <img align="center" alt="Dic0-php" height="30" width="40" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/php/php-original.svg">
   <img align="center" alt="Dic0-Laravel" height="30" width="40" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg">
