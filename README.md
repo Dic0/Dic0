@@ -15,7 +15,7 @@
   <img src="https://github-readme-activity-graph.vercel.app/graph?username=Dic0&theme=react-dark&bg_color=0D1117&hide_border=true" alt="GitHub Activity Graph"/>
 </p>
 
-<h2 align="center">My Tech Stack 💻</h2>
+<h2 align="center" style="color: #5BCDEC;">My Tech Stack 💻</h2>
 
 <div align="center" style="display: flex; justify-content: center; align-items: center; gap: 10px;">
   <img alt="JavaScript" height="40" width="50" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" title="JavaScript">
@@ -29,7 +29,7 @@
   <img alt="Firebase" height="40" width="50" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/firebase/firebase-original.svg" title="Firebase">
 </div>
 
-<h2 align="center">Connect with Me 🤝</h2>
+<h2 align="center" style="color: #5BCDEC;">Connect with Me 🤝</h2>
 
 <div align="center">
   <a href="https://instagram.com/dieric_wff" target="_blank"><img src="https://img.shields.io/badge/-Instagram-%23E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram"></a>
